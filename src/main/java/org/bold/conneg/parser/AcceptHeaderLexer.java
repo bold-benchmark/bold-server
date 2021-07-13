@@ -1,6 +1,6 @@
 // Generated from src/main/antlr/AcceptHeader.g4 by ANTLR 4.9.2
 
-package org.bold.conneg;
+package org.bold.conneg.parser;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
