@@ -1,5 +1,4 @@
 package org.bold.conneg;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -8,14 +7,13 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.bold.conneg.parser.AcceptHeaderBaseListener;
 import org.bold.conneg.parser.AcceptHeaderLexer;
 import org.bold.conneg.parser.AcceptHeaderParser;
-import org.bold.sim.SimulationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Holds an list of content types, ordered by client preferences
@@ -64,6 +62,8 @@ public class AcceptedContentTypes {
     private Map<String, Float> preferences = new HashMap<>();
 
     public AcceptedContentTypes(String headerField) {
+        if (headerField == null) return;
+
         CharStream in = CharStreams.fromString(headerField);
         AcceptHeaderLexer lexer = new AcceptHeaderLexer(in);
 

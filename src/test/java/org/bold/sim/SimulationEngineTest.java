@@ -63,7 +63,7 @@ public class SimulationEngineTest {
     public void testConstructor() throws Exception {
         int status = sendDummyRequest();
 
-        assert status == 503;
+        assert status == 200;
     }
 
     @Test
@@ -201,7 +201,7 @@ public class SimulationEngineTest {
 
     private static int sendDummyRequest() throws Exception {
         CloseableHttpClient client = HttpClients.createMinimal();
-        HttpGet req = new HttpGet("http://localhost:" + TEST_PORT + "/");
+        HttpGet req = new HttpGet("http://localhost:" + TEST_PORT + "/index.html");
         CloseableHttpResponse resp = client.execute(req);
         return resp.getStatusLine().getStatusCode();
     }

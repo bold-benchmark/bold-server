@@ -1,18 +1,23 @@
 package org.bold.gsp;
 
+import org.bold.conneg.AcceptedContentTypes;
 import org.bold.io.RDFValueFormats;
 import org.bold.sim.Vocabulary;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.rio.*;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.RDFWriter;
+import org.eclipse.rdf4j.rio.Rio;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,7 +59,8 @@ public class GraphStoreHandler extends AbstractHandler {
         // TODO use a ServletFilter instead, for processing Accept/Content-Type
 
         String acceptString = request.getHeader("Accept");
-        RDFFormat accept = getFormatForMediaType(acceptString);
+        List<String> accepted = new AcceptedContentTypes(acceptString).getContentTypes();
+        RDFFormat accept = getFormatForMediaTypes(accepted);
 
         if (accept == null) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -154,10 +160,19 @@ public class GraphStoreHandler extends AbstractHandler {
         return connection.hasStatement(null, null, null, false, graphName);
     }
 
+    private RDFFormat getFormatForMediaTypes(List<String> mediaTypes) {
+        if (mediaTypes.isEmpty()) return DEFAULT_RDF_FORMAT;
+
+        for (String mediaType : mediaTypes) {
+            RDFFormat f = getFormatForMediaType(mediaType);
+            if (f != null) return f;
+        }
+
+        return null;
+    }
+
     private RDFFormat getFormatForMediaType(String mediaType) {
         if (mediaType == null || mediaType.equals("*/*")) return DEFAULT_RDF_FORMAT;
-
-        // TODO parse conneg header if more complex value
 
         Optional<RDFFormat> opt = Rio.getParserFormatForMIMEType(mediaType);
         if (opt.isPresent()) return opt.get();
