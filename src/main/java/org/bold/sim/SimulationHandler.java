@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * High-level handler providing an interface to agents for managing simulations.
@@ -62,12 +63,18 @@ public class SimulationHandler extends AbstractHandler {
 
         InteractionHistory interactions = new InteractionHistory();
 
-        engine = new SimulationEngine(server.getURI().toString(), engineConnection, history, interactions);
+        log.info("Jetty Server reported base URI: " + server.getURI().toString());
+
+        URI baseURI = System.getenv("BOLD_SERVER_BASE_URI") == null ? server.getURI() : new URI(System.getenv("BOLD_SERVER_BASE_URI"));
+
+        log.info("Base URI after considering environment variable: " + baseURI.toString());
+
+        engine = new SimulationEngine(baseURI.toString(), engineConnection, history, interactions);
 
         // TODO have a handler thread pool (see org.eclipse.jetty.util.thread.QueuedThreadPool)
         // TODO manage RepositoryConnections for all individual threads
         // note: server's base URI is set only after server starts
-        gsHandler = new GraphStoreHandler(server.getURI(), handlerConnection);
+        gsHandler = new GraphStoreHandler(baseURI, handlerConnection);
         gsHandler.addGraphStoreListener(interactions);
 
         log.info("Server started on port {}. Waiting for command on resource {}...", port, SIMULATION_RESOURCE_TARGET);

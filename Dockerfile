@@ -9,16 +9,7 @@ FROM gradle:7.6-jdk8-focal AS build
 
 RUN mkdir /opt/bold-build
 
-COPY src             /opt/bold-build/src
-
-COPY build.gradle    /opt/bold-build/
-COPY settings.gradle /opt/bold-build/
-COPY gradle*         /opt/bold-build/
-
-COPY data            /opt/bold-build/data
-COPY query           /opt/bold-build/query
-COPY doc             /opt/bold-build/doc
-COPY *properties     /opt/bold-build/
+COPY ./ /opt/bold-build/
 
 WORKDIR /opt/bold-build
 
@@ -29,6 +20,7 @@ RUN gradle install
 FROM eclipse-temurin:8
 
 ENV TASKNAME=""
+ENV BOLD_SERVER_BASE_URI="http://127.0.1.1:8080/"
 
 COPY --from=0 /opt/bold-build/build /opt/bold
 
