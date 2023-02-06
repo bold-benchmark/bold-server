@@ -5,7 +5,7 @@
 # sudo docker run -p 8080:8080 -e TASKNAME=ts1 -it bold-server
 
 # Build BOLD
-FROM gradle:6-jdk8-focal AS build
+FROM gradle:7.6-jdk8-focal AS build
 
 RUN mkdir /opt/bold-build
 
@@ -17,6 +17,7 @@ COPY gradle*         /opt/bold-build/
 
 COPY data            /opt/bold-build/data
 COPY query           /opt/bold-build/query
+COPY doc             /opt/bold-build/doc
 COPY *properties     /opt/bold-build/
 
 WORKDIR /opt/bold-build
