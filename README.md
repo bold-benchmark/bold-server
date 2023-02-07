@@ -9,6 +9,11 @@ gradle install
 cd build/install/bold-server
 bin/bold-server
 ```
+Alternatively, with Docker:
+``` shell script
+docker build . -t bold-server
+docker run -p 8080:8080 -it bold-server
+```
 
 Then, go to http://localhost:8080 for a tutorial.
 
@@ -18,6 +23,10 @@ To evaluate agents against one of the tasks of the benchmark, run the server wit
 
 ```shell script
 bin/bold-server <taskname>
+```
+Alternatively, with Docker:
+```shell script
+docker run -p 8080:8080 -e TASKNAME=<taskname> -it bold-server
 ```
 
 The first argument of the server command is a task name, e.g. `bin/bold-benchmark ts1` will load `ts1.properties`.
