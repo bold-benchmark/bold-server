@@ -1,16 +1,19 @@
-// Generated from src/main/antlr/AcceptHeader.g4 by ANTLR 4.9.2
+// Generated from AcceptHeader.g4 by ANTLR 4.12.0
 
 package org.bold.conneg.parser;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class AcceptHeaderParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -89,16 +92,13 @@ public class AcceptHeaderParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class AcceptContext extends ParserRuleContext {
 		public List<MediaRangeContext> mediaRange() {
 			return getRuleContexts(MediaRangeContext.class);
 		}
 		public MediaRangeContext mediaRange(int i) {
 			return getRuleContext(MediaRangeContext.class,i);
-		}
-		public List<TerminalNode> OWS() { return getTokens(AcceptHeaderParser.OWS); }
-		public TerminalNode OWS(int i) {
-			return getToken(AcceptHeaderParser.OWS, i);
 		}
 		public AcceptContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -123,41 +123,19 @@ public class AcceptHeaderParser extends Parser {
 			{
 			setState(10);
 			mediaRange();
-			setState(21);
+			setState(15);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__0 || _la==OWS) {
+			while (_la==T__0) {
 				{
 				{
-				{
-				setState(12);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if (_la==OWS) {
-					{
-					setState(11);
-					match(OWS);
-					}
-				}
-
-				setState(14);
+				setState(11);
 				match(T__0);
-				setState(16);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if (_la==OWS) {
-					{
-					setState(15);
-					match(OWS);
-					}
-				}
-
-				}
-				setState(18);
+				setState(12);
 				mediaRange();
 				}
 				}
-				setState(23);
+				setState(17);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -174,6 +152,7 @@ public class AcceptHeaderParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MediaRangeContext extends ParserRuleContext {
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
@@ -186,10 +165,6 @@ public class AcceptHeaderParser extends Parser {
 		}
 		public ParameterContext parameter(int i) {
 			return getRuleContext(ParameterContext.class,i);
-		}
-		public List<TerminalNode> OWS() { return getTokens(AcceptHeaderParser.OWS); }
-		public TerminalNode OWS(int i) {
-			return getToken(AcceptHeaderParser.OWS, i);
 		}
 		public MediaRangeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -210,74 +185,51 @@ public class AcceptHeaderParser extends Parser {
 		enterRule(_localctx, 2, RULE_mediaRange);
 		int _la;
 		try {
-			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32);
+			setState(26);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				setState(24);
+				setState(18);
 				match(T__1);
 				}
 				break;
 			case 2:
 				{
-				setState(25);
+				setState(19);
 				type();
-				setState(26);
+				setState(20);
 				match(T__2);
 				}
 				break;
 			case 3:
 				{
-				setState(28);
+				setState(22);
 				type();
-				setState(29);
+				setState(23);
 				match(T__3);
-				setState(30);
+				setState(24);
 				subtype();
 				}
 				break;
 			}
-			setState(44);
+			setState(32);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					setState(35);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					if (_la==OWS) {
-						{
-						setState(34);
-						match(OWS);
-						}
-					}
-
-					setState(37);
-					match(T__4);
-					setState(39);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					if (_la==OWS) {
-						{
-						setState(38);
-						match(OWS);
-						}
-					}
-
-					setState(41);
-					parameter();
-					}
-					} 
+			_la = _input.LA(1);
+			while (_la==T__4) {
+				{
+				{
+				setState(28);
+				match(T__4);
+				setState(29);
+				parameter();
 				}
-				setState(46);
+				}
+				setState(34);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
+				_la = _input.LA(1);
 			}
 			}
 		}
@@ -292,6 +244,7 @@ public class AcceptHeaderParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TypeContext extends ParserRuleContext {
 		public TerminalNode TOKEN() { return getToken(AcceptHeaderParser.TOKEN, 0); }
 		public TypeContext(ParserRuleContext parent, int invokingState) {
@@ -314,7 +267,7 @@ public class AcceptHeaderParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(47);
+			setState(35);
 			match(TOKEN);
 			}
 		}
@@ -329,6 +282,7 @@ public class AcceptHeaderParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class SubtypeContext extends ParserRuleContext {
 		public TerminalNode TOKEN() { return getToken(AcceptHeaderParser.TOKEN, 0); }
 		public SubtypeContext(ParserRuleContext parent, int invokingState) {
@@ -351,7 +305,7 @@ public class AcceptHeaderParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(49);
+			setState(37);
 			match(TOKEN);
 			}
 		}
@@ -366,6 +320,7 @@ public class AcceptHeaderParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParameterContext extends ParserRuleContext {
 		public List<TerminalNode> TOKEN() { return getTokens(AcceptHeaderParser.TOKEN); }
 		public TerminalNode TOKEN(int i) {
@@ -393,11 +348,11 @@ public class AcceptHeaderParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(51);
+			setState(39);
 			match(TOKEN);
-			setState(52);
+			setState(40);
 			match(T__5);
-			setState(53);
+			setState(41);
 			_la = _input.LA(1);
 			if ( !(_la==TOKEN || _la==QVALUE) ) {
 			_errHandler.recoverInline(this);
@@ -421,22 +376,34 @@ public class AcceptHeaderParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\13:\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\5\2\17\n\2\3\2\3\2\5\2\23\n\2\3\2\7"+
-		"\2\26\n\2\f\2\16\2\31\13\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3#\n\3\3"+
-		"\3\5\3&\n\3\3\3\3\3\5\3*\n\3\3\3\7\3-\n\3\f\3\16\3\60\13\3\3\4\3\4\3\5"+
-		"\3\5\3\6\3\6\3\6\3\6\3\6\2\2\7\2\4\6\b\n\2\3\3\2\t\n\2<\2\f\3\2\2\2\4"+
-		"\"\3\2\2\2\6\61\3\2\2\2\b\63\3\2\2\2\n\65\3\2\2\2\f\27\5\4\3\2\r\17\7"+
-		"\13\2\2\16\r\3\2\2\2\16\17\3\2\2\2\17\20\3\2\2\2\20\22\7\3\2\2\21\23\7"+
-		"\13\2\2\22\21\3\2\2\2\22\23\3\2\2\2\23\24\3\2\2\2\24\26\5\4\3\2\25\16"+
-		"\3\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2\2\2\31\27"+
-		"\3\2\2\2\32#\7\4\2\2\33\34\5\6\4\2\34\35\7\5\2\2\35#\3\2\2\2\36\37\5\6"+
-		"\4\2\37 \7\6\2\2 !\5\b\5\2!#\3\2\2\2\"\32\3\2\2\2\"\33\3\2\2\2\"\36\3"+
-		"\2\2\2#.\3\2\2\2$&\7\13\2\2%$\3\2\2\2%&\3\2\2\2&\'\3\2\2\2\')\7\7\2\2"+
-		"(*\7\13\2\2)(\3\2\2\2)*\3\2\2\2*+\3\2\2\2+-\5\n\6\2,%\3\2\2\2-\60\3\2"+
-		"\2\2.,\3\2\2\2./\3\2\2\2/\5\3\2\2\2\60.\3\2\2\2\61\62\7\t\2\2\62\7\3\2"+
-		"\2\2\63\64\7\t\2\2\64\t\3\2\2\2\65\66\7\t\2\2\66\67\7\b\2\2\678\t\2\2"+
-		"\28\13\3\2\2\2\t\16\22\27\"%).";
+		"\u0004\u0001\t,\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0001"+
+		"\u0000\u0001\u0000\u0001\u0000\u0005\u0000\u000e\b\u0000\n\u0000\f\u0000"+
+		"\u0011\t\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u001b\b\u0001\u0001\u0001"+
+		"\u0001\u0001\u0005\u0001\u001f\b\u0001\n\u0001\f\u0001\"\t\u0001\u0001"+
+		"\u0002\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0004\u0001\u0004\u0001"+
+		"\u0004\u0001\u0004\u0001\u0004\u0000\u0000\u0005\u0000\u0002\u0004\u0006"+
+		"\b\u0000\u0001\u0001\u0000\u0007\b*\u0000\n\u0001\u0000\u0000\u0000\u0002"+
+		"\u001a\u0001\u0000\u0000\u0000\u0004#\u0001\u0000\u0000\u0000\u0006%\u0001"+
+		"\u0000\u0000\u0000\b\'\u0001\u0000\u0000\u0000\n\u000f\u0003\u0002\u0001"+
+		"\u0000\u000b\f\u0005\u0001\u0000\u0000\f\u000e\u0003\u0002\u0001\u0000"+
+		"\r\u000b\u0001\u0000\u0000\u0000\u000e\u0011\u0001\u0000\u0000\u0000\u000f"+
+		"\r\u0001\u0000\u0000\u0000\u000f\u0010\u0001\u0000\u0000\u0000\u0010\u0001"+
+		"\u0001\u0000\u0000\u0000\u0011\u000f\u0001\u0000\u0000\u0000\u0012\u001b"+
+		"\u0005\u0002\u0000\u0000\u0013\u0014\u0003\u0004\u0002\u0000\u0014\u0015"+
+		"\u0005\u0003\u0000\u0000\u0015\u001b\u0001\u0000\u0000\u0000\u0016\u0017"+
+		"\u0003\u0004\u0002\u0000\u0017\u0018\u0005\u0004\u0000\u0000\u0018\u0019"+
+		"\u0003\u0006\u0003\u0000\u0019\u001b\u0001\u0000\u0000\u0000\u001a\u0012"+
+		"\u0001\u0000\u0000\u0000\u001a\u0013\u0001\u0000\u0000\u0000\u001a\u0016"+
+		"\u0001\u0000\u0000\u0000\u001b \u0001\u0000\u0000\u0000\u001c\u001d\u0005"+
+		"\u0005\u0000\u0000\u001d\u001f\u0003\b\u0004\u0000\u001e\u001c\u0001\u0000"+
+		"\u0000\u0000\u001f\"\u0001\u0000\u0000\u0000 \u001e\u0001\u0000\u0000"+
+		"\u0000 !\u0001\u0000\u0000\u0000!\u0003\u0001\u0000\u0000\u0000\" \u0001"+
+		"\u0000\u0000\u0000#$\u0005\u0007\u0000\u0000$\u0005\u0001\u0000\u0000"+
+		"\u0000%&\u0005\u0007\u0000\u0000&\u0007\u0001\u0000\u0000\u0000\'(\u0005"+
+		"\u0007\u0000\u0000()\u0005\u0006\u0000\u0000)*\u0007\u0000\u0000\u0000"+
+		"*\t\u0001\u0000\u0000\u0000\u0003\u000f\u001a ";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

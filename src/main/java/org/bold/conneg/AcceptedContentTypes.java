@@ -2,6 +2,7 @@ package org.bold.conneg;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.bold.conneg.parser.AcceptHeaderBaseListener;
@@ -70,8 +71,12 @@ public class AcceptedContentTypes {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         AcceptHeaderParser parser = new AcceptHeaderParser(tokens);
 
-        ParseTree ast = parser.accept();
-        ParseTreeWalker.DEFAULT.walk(new AcceptedContentTypesListener(), ast);
+        try {
+            ParseTree ast = parser.accept();
+            ParseTreeWalker.DEFAULT.walk(new AcceptedContentTypesListener(), ast);
+        } catch (RuntimeException e) {
+            log.info("The provided accept header cannot be part. Assuming empty.", e);
+        }
 
         sort();
     }

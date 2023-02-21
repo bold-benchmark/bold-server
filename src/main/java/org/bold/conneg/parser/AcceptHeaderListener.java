@@ -1,4 +1,4 @@
-// Generated from src/main/antlr/AcceptHeader.g4 by ANTLR 4.9.2
+// Generated from AcceptHeader.g4 by ANTLR 4.12.0
 
 package org.bold.conneg.parser;
 

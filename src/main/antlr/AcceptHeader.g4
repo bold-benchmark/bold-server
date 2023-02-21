@@ -9,9 +9,9 @@ grammar AcceptHeader;
 package org.bold.conneg.parser;
 }
 
-accept : mediaRange ((OWS? ',' OWS?) mediaRange )*;
+accept : mediaRange (',' mediaRange )*;
 
-mediaRange : ( '*/*' | type '/*' | type '/' subtype ) ( OWS? ';' OWS? parameter )* ;
+mediaRange : ( '*/*' | type '/*' | type '/' subtype ) ( ';' parameter )* ;
 
 type : TOKEN ;
 
@@ -19,7 +19,7 @@ subtype : TOKEN ;
 
 parameter : TOKEN '=' (QVALUE | TOKEN) ; // TODO or quoted string
 
-TOKEN : [\-+0-9a-zA-Z]+;
+TOKEN : [a-zA-Z][\-+0-9a-zA-Z]*;
 
 QVALUE : ('0' ('.' [0-9]*)?)
        | ('1' ('.' '0'*)?);

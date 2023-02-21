@@ -18,7 +18,7 @@ dependencies {
 
     implementation group: 'org.eclipse.rdf4j', name : 'rdf4j-storage', version: '3.2.0'
     implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.28.v20200408'
-    implementation group: 'org.antlr', name: 'antlr4', version: '4.9.2'
+    implementation group: 'org.antlr', name: 'antlr4', version: '4.12.0'
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
 }
 
