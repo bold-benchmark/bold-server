@@ -34,7 +34,7 @@ public class GraphStoreHandler extends AbstractHandler {
     static {
         ACTUAL_RDF_FORMATS = new HashSet<RDFFormat>();
         ACTUAL_RDF_FORMATS.add(RDFFormat.TURTLE);
-        ACTUAL_RDF_FORMATS.add(RDFFormat.JSONLD);
+//        ACTUAL_RDF_FORMATS.add(RDFFormat.JSONLD); // RIO serialises quads into JSONLD
         ACTUAL_RDF_FORMATS.add(RDFFormat.NTRIPLES);
         ACTUAL_RDF_FORMATS.add(RDFFormat.RDFXML);
     }
@@ -69,6 +69,7 @@ public class GraphStoreHandler extends AbstractHandler {
         String acceptString = request.getHeader("Accept");
         List<String> accepted = new AcceptedContentTypes(acceptString).getContentTypes();
         RDFFormat accept = getFormatForMediaTypes(accepted);
+        System.out.println(accept);
 
         if (accept == null) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
