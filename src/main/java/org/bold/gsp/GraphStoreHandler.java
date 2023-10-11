@@ -30,6 +30,14 @@ import java.util.Set;
 public class GraphStoreHandler extends AbstractHandler {
 
     public static final RDFFormat DEFAULT_RDF_FORMAT = RDFFormat.TURTLE;
+    public static final Set<RDFFormat> ACTUAL_RDF_FORMATS;
+    static {
+        ACTUAL_RDF_FORMATS = new HashSet<RDFFormat>();
+        ACTUAL_RDF_FORMATS.add(RDFFormat.TURTLE);
+        ACTUAL_RDF_FORMATS.add(RDFFormat.JSONLD);
+        ACTUAL_RDF_FORMATS.add(RDFFormat.NTRIPLES);
+        ACTUAL_RDF_FORMATS.add(RDFFormat.RDFXML);
+    }
 
     private final URI baseURI;
 
@@ -165,10 +173,11 @@ public class GraphStoreHandler extends AbstractHandler {
 
         for (String mediaType : mediaTypes) {
             RDFFormat f = getFormatForMediaType(mediaType);
-            if (f != null) return f;
+            if (f != null && ACTUAL_RDF_FORMATS.contains(f))
+                return f;
         }
 
-        return null;
+        return DEFAULT_RDF_FORMAT;
     }
 
     private RDFFormat getFormatForMediaType(String mediaType) {
