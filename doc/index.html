@@ -1,0 +1,264 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>BOLD: A Benchmark for Linked Data and Hypermedia Agents</title>
+    <style>
+      * {
+        font-family: sans;
+      }
+
+      body {
+        max-width: 640px;
+        margin: auto;
+      }
+
+      body textarea {
+        max-width: 640px;
+      }
+
+      body img {
+        max-width: 640px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>BOLD: A Benchmark for Linked Data and Hypermedia Agents</h1>
+
+    <p>
+      Welcome to the BOLD (Buildings on Linked Data) simulation server.
+    </p>
+
+    <h2>Where do I start?</h2>
+
+    <p>
+        To start the simulation, PUT the following payload to <a href="sim">sim</a>:
+    </p>
+
+    <div>
+      <textarea id="start-payload" rows="12" cols="70">@prefix : &lt;http://ti.rw.fau.de/sim#&gt;  .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+@base &lt;http://127.0.1.1:8080/&gt; .
+
+&lt;sim&gt; :initialTime "2020-05-21T08:00:00Z"^^xsd:dateTime ;
+      # in ms (corresponds to simulated time, not real execution time)
+      :timeslotDuration 60000 ;
+      :iterations 1440 .</textarea>
+        </br>
+        <button id="start-button" onclick="send('sim', 'start')">Send</button>
+    </div>
+
+    <!-- TODO JSON-LD payload and drop-down list to choose format -->
+
+    <h2>How do I know the simulation is running?</h2>
+
+    <p>
+        The resource <a href="sim">sim</a> exposes the current time of the simulation.
+    </p>
+    <!--<p>
+        Essentially, the state of <a href="sim">sim</a> is the result of the update done via
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/src/main/resources/sim-init.rq">sim-init.rq</a> and
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/src/main/resources/sim.rq">sim.rq</a>.
+    </p>-->
+
+    <p>
+        As defined in the RDF payload you submitted, the simulation starts on May 21st, 2020 (8am) and ends after 1440
+        iterations. Each iteration lasts 60s, so the whole simulation lasts 24h in total.
+    </p>
+
+    <p>
+        If you repeatedly GET the state of <a href="sim">sim</a>, you'll see that the simulation runs much faster.
+        Actual execution time depends on how the server is internally configured (100ms per iteration, by default).
+    </p>
+
+    <p>
+        After the simulation starts, the BOLD server creates a hypermedia environment for user agents. The  environment
+        in BOLD is a building.
+    </p>
+
+    <h2>How do I explore the environment?</h2>
+
+    <p>
+        Start with:
+    </p>
+    <ul>
+        <li><a href="Building_B3">Building_B3</a></li>
+    </ul>
+
+    <p>
+        This resource describes building B3 of IBM, Dublin. That building exists in the physically world,
+        <a href="https://github.com/BuildSysUniformMetadata/GroundTruth/blob/2e48662/building_instances/IBM_B3.ttl">
+            an RDF description of the building
+        </a>
+        is publicly available.
+    </p>
+
+    <p>
+        In the RDF representation of building B3, notice the statement that it is 'part of' Dublin, where Dublin is
+        identified by a URI. Navigate to the corresponding resource:
+    </p>
+    <ul>
+        <li><a href="City_Dublin">City_Dublin</a></li>
+    </ul>
+
+    <p>
+        Navigating in the environment by following links is the first thing agents should do.
+        <a href="Building_B3">Building_B3</a> includes many other links than just 'Building_B3 isPartOf City_Dublin'.
+    </p>
+
+    <p>
+        In particular, the building links to floors and floors link to rooms. Rooms then link to data points
+        (sensors, actuators, set points).
+    </p>
+    <p>
+        As an example, navigate successively to:
+    </p>
+    <ol>
+        <li><a href="Wing_SOR42">Wing_SOR42</a></li>
+        <li><a href="Floor_GroundFloor">Floor_GroundFloor</a></li>
+        <li><a href="Room_SOR42_G_15">Room_SOR42_G_15</a></li>
+    </ol>
+    <p>
+        Once in room G15, you'll find an occupancy sensor and an on/off switch:
+    </p>
+    <ul>
+        <li><a href="d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
+        <li><a href="B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
+    </ul>
+
+    <p>
+        An alternative route to data points goes through the automation systems deployed in the building, such as
+        lighting systems. (It's as if you were going through doors or followed wires and pipes to navigate in the
+        physical building.) The following system <em>feeds</em> (manages light in) room G15:
+    </p>
+    <ul>
+        <li><a href="Lighting_GF_M90">Lighting_GF_M90</a></li>
+    </ul>
+
+    <p>
+        The links that interconnect building elements are labeled (e.g. with 'isPartOf', as already seen). Link labels,
+        also called <em>relation types</em>, are the RDF properties defined in the
+        <a href="https://brickschema.org/">Brick</a> ontology.
+    </p>
+
+    <h2>What can I do in the environment?</h2>
+
+    <p>
+      Occupancy sensors and lighting systems point to physical properties, which hold values (states).
+      The notion of properties comes from the <a href="https://www.w3.org/TR/vocab-ssn/">Semantic Sensor Network Ontology (SSN)</a>.
+    </p>
+    <p>
+      As example consider the properties of room G15's equipment:
+    </p>
+    <ul>
+      <li><a href="property-d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER#it">the occupancy property</a> observed by <a href="d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
+      <li><a href="property-B3_42_GF_Z5_G7_LGHT_LOAD#it">the on/off property</a> acted on by <a href="B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
+    </ul>
+
+    <p>
+        In contrast to rooms and system descriptions, property values change over time. Simulated occupants trigger
+        occupancy sensors and turn lights on. Simulated sunlight influences illuminance sensors, also included in the
+        environment.
+    </p>
+
+    <p>
+        As a result, your agents must monitor the environment by repeated GET requests on the exposed physical
+        properties.
+    </p>
+
+    <p>
+        All properties are readable but some are not writable. The occupancy isn't, for instance.
+        The on/off property is. To turn off lights in room G15, PUT the following payload to the on/off property
+        resource:
+    </p>
+
+    <div>
+      <textarea id="turnoff-payload" rows="6" cols="70">@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+@base &lt;http://127.0.1.1:8080/property-B3_42_GF_Z5_G7_LGHT_LOAD&gt; .
+
+&lt;#it&gt; rdf:value "off" .</textarea>
+        </br>
+        <button id="turnoff-button" onclick="send('property-B3_42_GF_Z5_G7_LGHT_LOAD', 'turnoff')">Send</button>
+    </div>
+
+    <h2>What goal do my agents have?</h2>
+
+    <p>
+        The environment includes 'faults', e.g. a light that remained turned on while no one is in the room anymore.
+        The goal of the agents operating over the BOLD building is to identify and minimize faults.
+    </p>
+    <p>
+        Each task of the BOLD benchmark comes with its own set of faults, ranging from 'light is on' to 'the room is
+        occupied but illuminance is below the threshold defined by the occupant'.
+    </p>
+    <p>
+        At the end of a simulation run, the BOLD server stores agent performances in TSV files. The file faults.tsv
+        stores the number of faults left in the environment in each timeslot. The file interactions.tsv stores the
+        number of GET/PUT/POST/DELETE requests sent by agents to the server, along with processing times before agents
+        get an response.
+    </p>
+
+    <h2>How can I inspect the behavior of the environment?</h2>
+
+    <p>
+        Agents only have access to resources exposed by the BOLD server. However, the server is a configurable software
+        component. It can be used to expose several kinds of environment, with arbitrary simulation logics.
+    </p>
+
+    <p>
+        The BOLD server is in fact a rule production system. It manages the state of resources as an RDF dataset and
+        executes SPARQL updates to simulate physical processes occurring spontaneously in the environment.
+    </p>
+
+    <p>
+        Some SPARQL updates are executed once, at initialization time (e.g.
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/query/init-sim-illuminance.rq">init-sim-illuminance.rq</a>
+        to initialize illuminance or
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/query/init-sim-occupancy.rq">init-sim-occupancy.rq</a>
+        to initialize occupancy). Other SPARQL updates are executed repeatedly, at the end of every timeslot (e.g.
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/query/update-sim-reactions.rq">update-sim-reactions.rq</a>
+        to carry out updates of illuminance and occupancy).
+    </p>
+
+    <p>
+        The server retrieves faults in the environments by evaluating SPARQL queries over the whole RDF dataset (see
+        e.g. <a href="https://github.com/bold-benchmark/bold-server/blob/master/query/sim-illuminance.rq">sim-illuminance.rq</a>
+        to retrieve illuminance sensors below a 500 lux threshold or
+        <a href="https://github.com/bold-benchmark/bold-server/blob/master/query/sim-occupancy.rq">sim-occupancy.rq</a>
+        to track occupants in the building). The result of evaluation is a set of solution mappings, each mapping
+        counting as one fault.
+    </p>
+
+    <p>
+        See e.g. the result (as output in faults.tsv) for illuminance for two successive runs over 12h:
+    </p>
+
+    <img src="sim-illuminance.png">
+
+    <p>
+        and the result for occupancy on the same runs:
+    </p>
+
+    <img src="sim-occupancy.png">
+
+    <p>
+        The initial RDF dataset and all SPARQL updates and SPARQL queries that define a task are given as argument when
+        running the server. See <a href="https://github.com/bold-benchmark/bold-server/blob/master/sim.properties">sim.properties</a>
+        for more details.
+    </p>
+
+    <script>
+        function send(uri, op) {
+            let btn = document.getElementById(`${op}-button`);
+            let txt = document.getElementById(`${op}-payload`);
+
+            fetch(uri, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'text/turtle'
+              },
+              body: txt.value
+            });
+        }
+    </script>
+  </body>
+</html>

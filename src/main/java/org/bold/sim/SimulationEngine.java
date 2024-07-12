@@ -7,15 +7,22 @@ import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Main entity of the BOLD server, managing the state of the simulation (configuration, init, runtime, replay) and the
+ * RDF dataset underlying the simulation.
+ *
+ * The class {@link SimulationHandler} provides an interface between the simulation engine and hypermedia agents.
+ */
 public class SimulationEngine {
 
     public enum EngineState {

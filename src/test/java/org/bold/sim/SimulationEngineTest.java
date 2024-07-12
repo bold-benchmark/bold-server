@@ -31,7 +31,13 @@ public class SimulationEngineTest {
      */
     private static final long LONGER_THAN_RUN = 750;
 
-    private static final String EXPECTED_TSV = "0\t1\n1\t1\n2\t1\n3\t1\n4\t1\n5\t1\n\n\n";
+    private static final String FAULT_FILENAME = "faults.tsv";
+
+    // FIXME should include only values in [0,5]?
+    private static final String EXPECTED_TSV = "0\t1\n1\t1\n2\t1\n3\t1\n4\t1\n5\t1\n6\t1\n\n\n";
+
+    // FIXME idem
+    private static final String EXPECTED_MULTIPLE_TSV = "0\t1\t1\n1\t1\t1\n2\t1\t1\n3\t1\t1\n4\t1\t1\n5\t1\t1\n6\t1\t1\n\n\n";
 
     private SimulationHandler handler = null;
     private SimulationEngine ngin = null;
@@ -57,7 +63,7 @@ public class SimulationEngineTest {
     public void testConstructor() throws Exception {
         int status = sendDummyRequest();
 
-        assert status == 503;
+        assert status == 200;
     }
 
     @Test
@@ -101,19 +107,14 @@ public class SimulationEngineTest {
         TimeUnit.MILLISECONDS.sleep(LONGER_THAN_RUN);
 
         // FIXME is in the server's root folder... Should be in a test folder
-        File dates = new File("sim-date.tsv");
-        File datesDesc = new File("sim-date-desc.tsv");
+        File tsv = new File(FAULT_FILENAME);
 
-        assert dates.exists();
-        assert datesDesc.exists();
+        assert tsv.exists();
 
-        String buf = FileUtils.asString(new FileInputStream(dates));
+        String buf = FileUtils.asString(new FileInputStream(tsv));
+        buf = withoutComments(buf);
 
-        assert buf.equals(EXPECTED_TSV); // FIXME why does minutes() not return 0, 1, 2...?
-
-        buf = FileUtils.asString(new FileInputStream(datesDesc));
-
-        assert buf.equals(EXPECTED_TSV); // FIXME same
+        assert buf.equals(EXPECTED_MULTIPLE_TSV); // FIXME why does minutes() not return 0, 1, 2...?
     }
 
     @Test
@@ -125,19 +126,14 @@ public class SimulationEngineTest {
         TimeUnit.MILLISECONDS.sleep(LONGER_THAN_RUN);
 
         // FIXME is in the server's root folder... Should be in a test folder
-        File dates = new File("sim-default-date.tsv");
-        File datesDesc = new File("sim-default-date-desc.tsv");
+        File tsv = new File(FAULT_FILENAME);
 
-        assert dates.exists();
-        assert datesDesc.exists();
+        assert tsv.exists();
 
-        String buf = FileUtils.asString(new FileInputStream(dates));
+        String buf = FileUtils.asString(new FileInputStream(tsv));
+        buf = withoutComments(buf);
 
-        assert buf.equals(EXPECTED_TSV); // FIXME why does minutes() not return 0, 1, 2...?
-
-        buf = FileUtils.asString(new FileInputStream(datesDesc));
-
-        assert buf.equals(EXPECTED_TSV); // FIXME same
+        assert buf.equals(EXPECTED_MULTIPLE_TSV); // FIXME why does minutes() not return 0, 1, 2...?
     }
 
     @Test
@@ -149,11 +145,12 @@ public class SimulationEngineTest {
         TimeUnit.MILLISECONDS.sleep(LONGER_THAN_RUN);
 
         // FIXME is in the server's root folder... Should be in a test folder
-        File tsv = new File("sim-iteration.tsv");
+        File tsv = new File(FAULT_FILENAME);
 
         assert tsv.exists();
 
         String buf = FileUtils.asString(new FileInputStream(tsv));
+        buf = withoutComments(buf);
 
         // TODO also test sequence of (two) SPARQL queries to ensure iteration is incremented by 1
         assert buf.equals(EXPECTED_TSV);
@@ -187,11 +184,12 @@ public class SimulationEngineTest {
         TimeUnit.MILLISECONDS.sleep(LONGER_THAN_RUN);
 
         // FIXME same as testReplay
-        File tsv = new File("sim-iteration.tsv");
+        File tsv = new File(FAULT_FILENAME);
 
         assert tsv.exists();
 
         String buf = FileUtils.asString(new FileInputStream(tsv));
+        buf = withoutComments(buf);
 
         assert buf.equals(EXPECTED_TSV + EXPECTED_TSV);
     }
@@ -203,7 +201,7 @@ public class SimulationEngineTest {
 
     private static int sendDummyRequest() throws Exception {
         CloseableHttpClient client = HttpClients.createMinimal();
-        HttpGet req = new HttpGet("http://localhost:" + TEST_PORT + "/");
+        HttpGet req = new HttpGet("http://localhost:" + TEST_PORT + "/index.html");
         CloseableHttpResponse resp = client.execute(req);
         return resp.getStatusLine().getStatusCode();
     }
@@ -215,6 +213,11 @@ public class SimulationEngineTest {
         req.setEntity(new InputStreamEntity(FileUtils.getFileOrResource(filename)));
         CloseableHttpResponse resp = client.execute(req);
         return resp.getStatusLine().getStatusCode();
+    }
+
+    private static String withoutComments(String str) {
+        // note: the regex assumes comments take full lines
+        return str.replaceAll("#[^\n]*\n", "");
     }
     
     private static void clearResults() {

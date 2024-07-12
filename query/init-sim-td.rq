@@ -1,0 +1,51 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX brick: <http://buildsys.org/ontologies/Brick#>
+PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX ssn: <http://www.w3.org/ns/ssn/>
+PREFIX qudt: <http://qudt.org/schema/qudt#>
+PREFIX td: <https://www.w3.org/2019/wot/td#>
+PREFIX hctl: <https://www.w3.org/2019/wot/hypermedia#>
+PREFIX time: <http://www.w3.org/2006/time#>
+PREFIX sim: <http://ti.rw.fau.de/sim#>
+
+INSERT {
+    GRAPH ?device {
+    	?device a td:Thing ;
+        	    td:hasPropertyAffordance ?af .
+    	?af ssn:forProperty ?prop ;
+    	    td:hasForm ?form .
+    	?form a hctl:Form ;
+        	  hctl:hasTarget ?g ;
+          	  hctl:hasOperationType td:readProperty .
+    }
+} WHERE {
+	VALUES ?deviceClass { brick:Luminance_Sensor brick:Luminance_Command brick:Occupancy_Sensor }
+	?device a ?deviceClass .
+
+    ?device ssn:hasProperty|sosa:observes|sosa:actsOnProperty ?prop .
+    ?prop foaf:isPrimaryTopicOf ?g .
+
+	BIND (strafter(str(?device), "/") AS ?propName)
+    BIND (iri(concat(?propName, "#affordance")) AS ?af)
+    BIND (iri(concat(?propName, "#form-read")) AS ?form)
+};
+
+INSERT {
+    GRAPH ?device {
+    	?af td:hasForm ?form .
+    	?form a hctl:Form ;
+        	  hctl:hasTarget ?g ;
+          	  hctl:hasOperationType td:writeProperty .
+    }
+} WHERE {
+	?device a brick:Luminance_Command ;
+	        td:hasPropertyAffordance ?af .
+
+	?af ssn:forProperty ?prop .
+    ?prop foaf:isPrimaryTopicOf ?g .
+
+	BIND (strafter(str(?device), "/") AS ?propName)
+    BIND (iri(concat(?propName, "#form-write")) AS ?form)
+};

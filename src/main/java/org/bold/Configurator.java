@@ -20,7 +20,7 @@ public class Configurator {
 
     private final static String REPLAY_DUMP_KEY = "bold.replay.dump";
 
-    private final static String INIT_SPARQL_INIT = "bold.sparql.init";
+    private final static String SPARQL_INIT = "bold.sparql.init";
 
     private final static String SPARQL_UPDATE = "bold.sparql.update";
 
@@ -42,7 +42,7 @@ public class Configurator {
             engine.registerDataset(f);
         }
 
-        for (String f : FileUtils.listFiles(config.getProperty(INIT_SPARQL_INIT))) {
+        for (String f : FileUtils.listFiles(config.getProperty(SPARQL_INIT))) {
             engine.registerSingleUpdate(f);
         }
 

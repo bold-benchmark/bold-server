@@ -13,6 +13,7 @@ public class FileUtils {
      * Returns a list of file names matching the given pattern.
      *
      * FIXME comply to shell file patterns (e.g. '*' also matches empty strings)
+     * TODO escape regex special characters in pattern
      *
      * @param pattern path that may include wildcards (*)
      * @return
@@ -96,8 +97,10 @@ public class FileUtils {
                 if (tail.isEmpty()) {
                     matches.add(match);
                 } else {
+                    File subroot = new File(root.getPath() + "/" + match);
+
                     // TODO wildcard should include subfolders?
-                    for (String tailMatch : listFilesRec(tail, new File(match))) {
+                    for (String tailMatch : listFilesRec(tail, subroot)) {
                         matches.add(match + "/" + tailMatch);
                     }
                 }

@@ -1,16 +1,36 @@
-# Benchmark Server
+# BOLD Server
+
+## Quickstart
 
 To run the server:
 
 ```shell script
 gradle install
-cd build/install/bold-benchmark
-bin/bold-benchmark <taskname>
+cd build/install/bold-server
+bin/bold-server
+```
+Alternatively, with Docker:
+``` shell script
+docker build . -t bold-server
+docker run -p 8080:8080 -it bold-server
 ```
 
-Default server configuration is stored in `sim.properties`.
-The different tasks of the benchmark also have their own configuration file.
+Then, go to http://localhost:8080 for a tutorial.
+
+## Benchmark Run
+
+To evaluate agents against one of the tasks of the benchmark, run the server with an argument:
+
+```shell script
+bin/bold-server <taskname>
+```
+Alternatively, with Docker:
+```shell script
+docker run -p 8080:8080 -e TASKNAME=<taskname> -it bold-server
+```
+
 The first argument of the server command is a task name, e.g. `bin/bold-benchmark ts1` will load `ts1.properties`.
+Default server configuration (when no argument is given) is stored in `sim.properties`.
 
 To start/stop a simulation run, send the following HTTP requests to the server:
 
@@ -33,3 +53,7 @@ At the end of a simulation run, results are stored in the following two files:
  - `interactions.tsv`: first column also gives the iteration number, second column gives the total execution time for registered updates and the number of GET, PUT, DELETE, POST interactions with agents (included average processing time for each)
 
 Results for any two successive runs are separated by `\n\n` (Gnuplot convention for multi-dataset files). Each dataset, i.e. data for a single run, includes a header line starting with `#` (Gnuplot comment symbol).
+
+## Acknowledgments
+
+This work was partially funded by the German Federal Ministry of Education and Research through the MOSAIK project (grant no. 01IS18070A).
