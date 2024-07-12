@@ -1,4 +1,4 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
 import java.sql.Time;
 import java.util.Stack;

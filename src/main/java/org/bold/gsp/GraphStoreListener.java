@@ -1,4 +1,4 @@
-package de.fau.wintechis.gsp;
+package org.bold.gsp;
 
 import org.eclipse.rdf4j.model.IRI;
 

@@ -1,6 +1,6 @@
-package de.fau.wintechis.sparql;
+package org.bold.sparql;
 
-import de.fau.wintechis.sim.Vocabulary;
+import org.bold.sim.Vocabulary;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;

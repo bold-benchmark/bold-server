@@ -1,6 +1,6 @@
-package de.fau.wintechis.io;
+package org.bold.io;
 
-import de.fau.wintechis.sim.SimulationEngine;
+import org.bold.sim.SimulationEngine;
 
 import java.io.*;
 import java.net.URL;

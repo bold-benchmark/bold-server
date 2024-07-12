@@ -4,31 +4,28 @@ plugins {
 }
 
 group 'de.fau.wintechis'
-version '0.1.0'
+version '0.2.0'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://dl.bintray.com/ntnu-ihb/mvn'
-    }
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
 
-    compile group: 'org.eclipse.rdf4j', name : 'rdf4j-storage', version: '3.2.0'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.28.v20200408'
+    implementation group: 'org.eclipse.rdf4j', name : 'rdf4j-storage', version: '3.2.0'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.28.v20200408'
     // FIXME SLF4J is already bound in fmi4j?
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
-    compile group: 'no.ntnu.ihb.fmi4j', name: 'fmi-import', version: '0.36.3'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+    implementation group: 'info.laht.fmi4j', name: 'fmi-import', version: '0.38.0'
     // Kotlin runtime required by fmi4j
-    compile group:'org.jetbrains.kotlin', name:'kotlin-stdlib-jdk8', version: '1.4.21'
+    implementation group:'org.jetbrains.kotlin', name:'kotlin-stdlib-jdk8', version: '1.4.21'
 }
 
-mainClassName = 'de.fau.wintechis.Configurator'
+mainClassName = 'org.bold.Configurator'
 
 distributions {
     main {

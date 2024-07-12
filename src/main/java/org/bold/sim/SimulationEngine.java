@@ -1,20 +1,18 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
-import de.fau.wintechis.io.FileUtils;
+import org.bold.io.FileUtils;
+import org.bold.ts.TransitionSystem;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -44,6 +42,8 @@ public class SimulationEngine {
 
     private final Map<String, TupleQuery> queries = new HashMap<>();
 
+    private final Collection<TransitionSystem> transitionSystems = new HashSet<>();
+
     private String dumpPattern = null;
 
     private String faultFilename = "faults.tsv"; // FIXME as config parameter
@@ -64,6 +64,10 @@ public class SimulationEngine {
 
     private BooleanQuery simRunningQuery = null; // TODO clean assignment
 
+    private Update simInitUpdate;
+
+    private Update simRuntimeUpdate;
+
     public SimulationEngine(String base, RepositoryConnection con, UpdateHistory updates, InteractionHistory interactions) {
         baseURI = base;
 
@@ -76,13 +80,19 @@ public class SimulationEngine {
         interactionHistory = interactions;
 
         try {
+            // TODO manage time in Java instead (and only update dataset once)
+            // TODO move update registration to SPARQL TransitionSystem
+
             // sim resource must be updated first, before any other resource
-            registerSingleUpdate("sim-init.rq");
-            registerContinuousUpdate("sim.rq");
+            String simInitBuf = FileUtils.asString(FileUtils.getFileOrResource("sim-init.rq"));
+            simInitUpdate = connection.prepareUpdate(QueryLanguage.SPARQL, simInitBuf, baseURI);
+
+            String simRuntimeBuf = FileUtils.asString(FileUtils.getFileOrResource("sim.rq"));
+            simRuntimeUpdate = connection.prepareUpdate(QueryLanguage.SPARQL, simRuntimeBuf, baseURI);
 
             // simulation ends when no iteration is left in sim resource
-            String buf = FileUtils.asString(FileUtils.getFileOrResource("sim-running.rq"));
-            simRunningQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, buf, baseURI);
+            String simQueryBuf = FileUtils.asString(FileUtils.getFileOrResource("sim-running.rq"));
+            simRunningQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, simQueryBuf, baseURI);
 
             callTransition();
         } catch (Exception e) {
@@ -144,6 +154,12 @@ public class SimulationEngine {
         return this;
     }
 
+    public SimulationEngine registerTransitionSystem(TransitionSystem ts) {
+        transitionSystems.add(ts);
+
+        return this;
+    }
+
     public SimulationEngine setDumpPattern(String filenamePattern) {
         dumpPattern = filenamePattern;
 
@@ -155,12 +171,14 @@ public class SimulationEngine {
     }
 
     /**
-     * For test purposes.
-     *
      * @return the engine's repository connection
      */
-    RepositoryConnection getConnection() {
+    public RepositoryConnection getConnection() {
         return connection;
+    }
+
+    public String getBaseURI() {
+        return baseURI;
     }
 
     void callTransition() {
@@ -228,7 +246,8 @@ public class SimulationEngine {
     private void init() {
         long before = System.currentTimeMillis();
         connection.add(dataset);
-        for (Update u : singleUpdates.values()) u.execute();
+        simInitUpdate.execute();
+        for (TransitionSystem ts : transitionSystems) ts.init();
         long after = System.currentTimeMillis();
 
         long t = after - before;
@@ -250,7 +269,8 @@ public class SimulationEngine {
 
     private void update() {
         long before = System.currentTimeMillis();
-        for (Update u : continuousUpdates.values()) u.execute();
+        simRuntimeUpdate.execute();
+        for (TransitionSystem ts : transitionSystems) ts.update();
         long after = System.currentTimeMillis();
 
         long t = after - before;
@@ -265,6 +285,8 @@ public class SimulationEngine {
     private void replay() {
         timer.cancel();
         timer.purge();
+
+        for (TransitionSystem ts : transitionSystems) ts.end();
 
         // TODO put all formatting to separate classes
 

@@ -1,4 +1,4 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
 public class IllegalSimulationStateException extends RuntimeException {
 

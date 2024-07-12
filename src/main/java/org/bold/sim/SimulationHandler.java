@@ -1,11 +1,9 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
-import de.fau.wintechis.gsp.GraphStoreHandler;
+import org.bold.gsp.GraphStoreHandler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.rdf4j.repository.config.RepositoryRegistry;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;

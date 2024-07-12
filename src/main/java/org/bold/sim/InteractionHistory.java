@@ -1,6 +1,6 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
-import de.fau.wintechis.gsp.GraphStoreListener;
+import org.bold.gsp.GraphStoreListener;
 import org.eclipse.rdf4j.model.IRI;
 
 import java.io.IOException;

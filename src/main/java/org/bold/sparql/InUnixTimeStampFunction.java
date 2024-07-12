@@ -1,6 +1,6 @@
-package de.fau.wintechis.sparql;
+package org.bold.sparql;
 
-import de.fau.wintechis.sim.Vocabulary;
+import org.bold.sim.Vocabulary;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -10,7 +10,6 @@ import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
 
 /**
  * This custom function turns an xsd:dateTime into an integer Unix timestamp (number of milliseconds since Jan, 1st 1970).

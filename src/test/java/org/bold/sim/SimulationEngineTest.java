@@ -1,6 +1,6 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
-import de.fau.wintechis.io.FileUtils;
+import org.bold.io.FileUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;

@@ -1,0 +1,10 @@
+PREFIX : <http://ti.rw.fau.de/sim#>
+PREFIX time: <http://www.w3.org/2006/time#>
+
+SELECT ?elapsedTime ?timeslotDuration WHERE {
+    ?sim :currentIteration ?it ;
+         :timeslotDuration ?durationMilli .
+
+    BIND (?durationMilli / 1000 AS ?timeslotDuration)
+    BIND (?it * ?timeslotDuration AS ?elapsedTime)
+}

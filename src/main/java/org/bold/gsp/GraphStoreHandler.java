@@ -1,6 +1,6 @@
-package de.fau.wintechis.gsp;
+package org.bold.gsp;
 
-import de.fau.wintechis.sim.Vocabulary;
+import org.bold.sim.Vocabulary;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.rdf4j.model.IRI;

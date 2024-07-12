@@ -1,21 +1,9 @@
-package de.fau.wintechis.sim;
+package org.bold.sim;
 
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.Update;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.event.NotifyingRepositoryConnection;
-import org.eclipse.rdf4j.repository.event.RepositoryConnectionListener;
-import org.eclipse.rdf4j.repository.event.base.RepositoryConnectionListenerAdapter;
-import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailConnectionListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 class UpdateHistory extends Stack<UpdateHistory.UpdateSequence> implements History, SailConnectionListener {
