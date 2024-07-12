@@ -16,10 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Basic implementation of the SPARQL Graph Store protocol, giving
@@ -30,13 +28,13 @@ import java.util.Set;
 public class GraphStoreHandler extends AbstractHandler {
 
     public static final RDFFormat DEFAULT_RDF_FORMAT = RDFFormat.TURTLE;
-    public static final Set<RDFFormat> ACTUAL_RDF_FORMATS;
+
+    public static final Set<String> GRAPH_ONLY_FORMATS = new HashSet<>();
+
     static {
-        ACTUAL_RDF_FORMATS = new HashSet<RDFFormat>();
-        ACTUAL_RDF_FORMATS.add(RDFFormat.TURTLE);
-//        ACTUAL_RDF_FORMATS.add(RDFFormat.JSONLD); // RIO serialises quads into JSONLD
-        ACTUAL_RDF_FORMATS.add(RDFFormat.NTRIPLES);
-        ACTUAL_RDF_FORMATS.add(RDFFormat.RDFXML);
+        GRAPH_ONLY_FORMATS.add(RDFFormat.TURTLE.getDefaultMIMEType());
+        GRAPH_ONLY_FORMATS.add(RDFFormat.NTRIPLES.getDefaultMIMEType());
+        GRAPH_ONLY_FORMATS.add(RDFFormat.RDFXML.getDefaultMIMEType());
     }
 
     private final URI baseURI;
@@ -69,7 +67,6 @@ public class GraphStoreHandler extends AbstractHandler {
         String acceptString = request.getHeader("Accept");
         List<String> accepted = new AcceptedContentTypes(acceptString).getContentTypes();
         RDFFormat accept = getFormatForMediaTypes(accepted);
-        System.out.println(accept);
 
         if (accept == null) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -169,25 +166,42 @@ public class GraphStoreHandler extends AbstractHandler {
         return connection.hasStatement(null, null, null, false, graphName);
     }
 
+    /**
+     * 1. look for any RDF format
+     * 2. if the query has no known RDF format, look for a format with registered writer
+     * 3. if none found, return <code>null</code>
+     *
+     * @param mediaTypes ordered list of possible media types (first is preferred)
+     * @return the RDF format preferred by the server
+     */
     private RDFFormat getFormatForMediaTypes(List<String> mediaTypes) {
         if (mediaTypes.isEmpty()) return DEFAULT_RDF_FORMAT;
 
-        for (String mediaType : mediaTypes) {
-            RDFFormat f = getFormatForMediaType(mediaType);
-            if (f != null && ACTUAL_RDF_FORMATS.contains(f))
-                return f;
-        }
+        Optional<RDFFormat> rdfMediaType = mediaTypes.stream()
+                .map(mt -> getFormatForMediaType(mt))
+                .filter(Objects::nonNull)
+                .findFirst();
 
-        return DEFAULT_RDF_FORMAT;
+        if (rdfMediaType.isPresent()) return rdfMediaType.get();
+
+        Optional<RDFFormat> rdfValueMediaType = mediaTypes.stream()
+                .map(mt -> RDFValueFormats.getFormatForMediaType(mt))
+                .filter(Objects::nonNull)
+                .findFirst();
+
+        // FIXME N-Triples selected if text/plain
+        if (rdfValueMediaType.isPresent()) return rdfValueMediaType.get();
+
+        return null;
     }
 
     private RDFFormat getFormatForMediaType(String mediaType) {
         if (mediaType == null || mediaType.equals("*/*")) return DEFAULT_RDF_FORMAT;
 
         Optional<RDFFormat> opt = Rio.getParserFormatForMIMEType(mediaType);
-        if (opt.isPresent()) return opt.get();
-
-        return RDFValueFormats.getFormatForMediaType(mediaType);
+        // FIXME issue with JSON-LD?
+        if (opt.isPresent() && !opt.get().supportsContexts()) return opt.get();
+        else return null;
     }
 
 }

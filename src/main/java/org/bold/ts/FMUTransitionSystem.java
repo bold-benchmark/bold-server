@@ -2,6 +2,7 @@ package org.bold.ts;
 
 import no.ntnu.ihb.fmi4j.Fmi4jVariableUtils;
 import no.ntnu.ihb.fmi4j.SlaveInstance;
+import no.ntnu.ihb.fmi4j.importer.fmi2.CoSimulationFmu;
 import no.ntnu.ihb.fmi4j.importer.fmi2.Fmu;
 import no.ntnu.ihb.fmi4j.modeldescription.variables.TypedScalarVariable;
 import no.ntnu.ihb.fmi4j.modeldescription.variables.VariableType;
@@ -22,6 +23,8 @@ import java.util.Optional;
 
 public class FMUTransitionSystem extends TransitionSystem {
 
+    private final CoSimulationFmu fmu;
+
     private final SlaveInstance fmuSlave;
 
     private final Map<String, Resource> resources = new HashMap<>();
@@ -31,9 +34,8 @@ public class FMUTransitionSystem extends TransitionSystem {
     public FMUTransitionSystem(SimulationEngine engine, String fmuFile) throws IOException {
         super(engine);
 
-        Fmu fmu = Fmu.from(new File(fmuFile));
-        fmuSlave = fmu.asCoSimulationFmu().newInstance();
-        fmuSlave.simpleSetup();
+        fmu = Fmu.from(new File(fmuFile)).asCoSimulationFmu();
+        fmuSlave = fmu.newInstance();
 
         ValueFactory f = engine.getConnection().getValueFactory();
         String base = engine.getBaseURI();
@@ -49,6 +51,9 @@ public class FMUTransitionSystem extends TransitionSystem {
 
     @Override
     public void init() {
+        fmuSlave.reset();
+        fmuSlave.simpleSetup();
+
         updateDataset();
     }
 

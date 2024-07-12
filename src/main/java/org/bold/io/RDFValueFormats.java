@@ -20,21 +20,33 @@ import java.util.*;
  */
 public class RDFValueFormats {
 
-    private static final ValueFactory vf = SimpleValueFactory.getInstance();
+    public static final RDFFormat HTML = new RDFFormat(
+            "HTML", Arrays.asList("text/html"), Charset.defaultCharset(), Arrays.asList("html"), RDF.HTML,
+            false, false, false);
 
-    private static final Set<RDFFormat> formats = new HashSet<>();
+    public static final RDFFormat XML = new RDFFormat(
+            "XML", Arrays.asList("text/xml"), Charset.defaultCharset(), Arrays.asList("xml"), RDF.XMLLITERAL,
+            false, false, false);
+
+    public static final RDFFormat JSON = new RDFFormat(
+            "JSON", Arrays.asList("application/json"), Charset.defaultCharset(), Arrays.asList("json"),
+            // note: rdf:JSON was added later to the RDF namespace, it is not included in RDF4J (yet)
+            SimpleValueFactory.getInstance().createIRI(RDF.NAMESPACE, "JSON"),
+            false, false, false);
+
+    public static final RDFFormat TXT = new RDFFormat(
+            "TXT", Arrays.asList("text/plain"), Charset.defaultCharset(), Arrays.asList("txt"), null,
+            false, false, false);
+
+    private static final Collection<RDFFormat> formats = Arrays.asList(HTML, XML, JSON, TXT);
 
     static {
-        // note: rdf:JSON was added later to the RDF namespace, it is not included in RDF4J (yet)
-        IRI jsonIRI = SimpleValueFactory.getInstance().createIRI(RDF.NAMESPACE, "JSON");
+        RDFWriterRegistry registry = RDFWriterRegistry.getInstance();
 
-        formats.add(new RDFFormat("HTML", Arrays.asList("text/html"), Charset.defaultCharset(), Arrays.asList("html"), RDF.HTML, false, false, false));
-        formats.add(new RDFFormat("XML", Arrays.asList("text/xml"), Charset.defaultCharset(), Arrays.asList("xml"), RDF.XMLLITERAL, false, false, false));
-        formats.add(new RDFFormat("JSON", Arrays.asList("application/json"), Charset.defaultCharset(), Arrays.asList("json"), jsonIRI, false, false, false));
-
-        for (RDFFormat f : formats) {
-            RDFWriterRegistry.getInstance().add(new RDFValueWriterFactory(f));
-        }
+        registry.add(new RDFValueWriterFactory(HTML));
+        registry.add(new RDFValueWriterFactory(XML));
+        registry.add(new RDFValueWriterFactory(JSON));
+        registry.add(new RDFValueWriterFactory(TXT));
     }
 
     public static RDFFormat getFormatForMediaType(String mediaType) {

@@ -2,6 +2,7 @@ package org.bold.io;
 
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.rio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,9 @@ public class RDFValueWriter implements RDFWriter {
 
     private final RDFFormat format;
 
-    private final IRI datatypeIRI;
-
     public RDFValueWriter(Writer baseWriter, RDFFormat format) {
         this.baseWriter = baseWriter;
         this.format = format;
-        this.datatypeIRI = format.getStandardURI();
     }
 
     @Override
@@ -91,12 +89,10 @@ public class RDFValueWriter implements RDFWriter {
         if (p.equals(RDF.VALUE) && s.equals(g)) {
             Value o = st.getObject();
 
-            if (o instanceof Literal && ((Literal) o).getDatatype().equals(datatypeIRI)) {
-                String representation = o.stringValue();
-
+            if (o instanceof Literal) {
                 try {
                     // TODO if several representations are available, choose one?
-                    baseWriter.write(representation);
+                    handleValue((Literal) o);
                 } catch (IOException e) {
                     log.error("Couldn't write literal representation to stream", e);
                 }
@@ -107,6 +103,39 @@ public class RDFValueWriter implements RDFWriter {
     @Override
     public void handleComment(String comment) throws RDFHandlerException {
         // ignore
+    }
+
+    private void handleValue(Literal l) throws IOException {
+        if (l.getDatatype().equals(format.getStandardURI()) || format.equals(RDFValueFormats.TXT)) {
+            baseWriter.write(l.stringValue());
+        } else if (format.equals(RDFValueFormats.JSON)) {
+            if (l.getDatatype().equals(XMLSchema.BOOLEAN)) baseWriter.write(l.stringValue());
+            else if (isIntegerDatatype(l.getDatatype())) baseWriter.write(String.valueOf(l.longValue()));
+            else if (isDecimalDatatype(l.getDatatype())) baseWriter.write(String.valueOf(l.doubleValue()));
+            else baseWriter.write("\"" + l.stringValue().replace("\"", "\\") + "\"");
+        }
+    }
+
+    private boolean isIntegerDatatype(IRI dt) {
+        return dt.equals(XMLSchema.INTEGER) ||
+                dt.equals(XMLSchema.LONG) ||
+                dt.equals(XMLSchema.INT) ||
+                dt.equals(XMLSchema.SHORT) ||
+                dt.equals(XMLSchema.BYTE) ||
+                dt.equals(XMLSchema.NON_NEGATIVE_INTEGER) ||
+                dt.equals(XMLSchema.POSITIVE_INTEGER) ||
+                dt.equals(XMLSchema.UNSIGNED_LONG) ||
+                dt.equals(XMLSchema.UNSIGNED_INT) ||
+                dt.equals(XMLSchema.UNSIGNED_SHORT) ||
+                dt.equals(XMLSchema.UNSIGNED_BYTE) ||
+                dt.equals(XMLSchema.NON_POSITIVE_INTEGER) ||
+                dt.equals(XMLSchema.NEGATIVE_INTEGER);
+    }
+
+    private boolean isDecimalDatatype(IRI dt) {
+        return dt.equals(XMLSchema.DECIMAL) ||
+                dt.equals(XMLSchema.FLOAT) ||
+                dt.equals(XMLSchema.DOUBLE);
     }
 
 }
