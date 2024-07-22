@@ -1,10 +1,19 @@
 package org.bold.sim;
 
+import org.bold.Configurator;
 import org.bold.io.FileUtils;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.IntegerLiteral;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
@@ -13,8 +22,13 @@ import org.slf4j.LoggerFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Main entity of the BOLD server, managing the state of the simulation (configuration, init, runtime, replay) and the
@@ -36,7 +50,7 @@ public class SimulationEngine {
 
     private final Logger log = LoggerFactory.getLogger(SimulationEngine.class);
 
-    private final Integer timeSlotDuration = 100; // TODO as config parameter
+    private Long timeSlotDuration = null;
 
     private EngineState currentState = EngineState.CREATED;
 
@@ -56,7 +70,7 @@ public class SimulationEngine {
 
     private final RepositoryConnection connection;
 
-    private final RepositoryConnection replayConnection;
+    private RepositoryConnection replayConnection = null;
 
     private final UpdateHistory updateHistory;
 
@@ -74,7 +88,6 @@ public class SimulationEngine {
         // RDF store initialization
         Vocabulary.registerFunctions();
         connection = con;
-        replayConnection = con.getRepository().getConnection();
 
         updateHistory = updates;
         interactionHistory = interactions;
@@ -120,7 +133,7 @@ public class SimulationEngine {
     }
 
     public SimulationEngine registerQuery(String name, String sparqlString) throws IOException {
-        TupleQuery q = replayConnection.prepareTupleQuery(QueryLanguage.SPARQL, sparqlString, baseURI);
+        TupleQuery q = connection.prepareTupleQuery(QueryLanguage.SPARQL, sparqlString, baseURI);
         queries.put(name, q);
 
         return this;
@@ -130,6 +143,11 @@ public class SimulationEngine {
         RDFFormat format = Rio.getParserFormatForFileName(filename).orElseThrow(() -> new IOException());
         Model ds = Rio.parse(FileUtils.getFileOrResource(filename), baseURI, format);
         dataset.addAll(ds);
+        Iterable<Statement> triplesFromDefaultGraph = ds.getStatements(null, null, null, (Resource) null);
+		for (Statement s : triplesFromDefaultGraph) {
+			dataset.add(s.getSubject(), s.getPredicate(), s.getObject(),
+					new Resource[] { connection.getValueFactory().createIRI(baseURI.toString()) });
+		}
 
         return this;
     }
@@ -168,6 +186,9 @@ public class SimulationEngine {
     }
 
     void callTransition() {
+		boolean oneMoreTransition = false;
+		do {
+		oneMoreTransition = false;
         switch (currentState) {
             case CREATED:
                 log.info("Simulation engine created.");
@@ -190,10 +211,16 @@ public class SimulationEngine {
                 log.info("Simulation ready: {} resources, {} quads in dataset.", dataset.contexts().size(), dataset.size());
                 // TODO log nb of iterations (estimated duration)
                 currentState = EngineState.READY;
-                callTransition();
+				oneMoreTransition = true;
                 break;
 
             case READY:
+                log.info("Simulation parameters: ");
+                IRI simIRI = connection.getValueFactory().createIRI(baseURI + Configurator.SIMULATION_RESOURCE_TARGET);
+                RepositoryResult<Statement> res = connection.getStatements(null, null, null, simIRI);
+                for (Statement stmt:res)
+					log.info(stmt.toString());
+                log.info("Simulation stops when the following query returns true: {}", simRunningQuery);
                 log.info("Simulation running...");
                 run();
                 currentState = EngineState.RUNNING;
@@ -205,7 +232,7 @@ public class SimulationEngine {
                     update();
                 } else {
                     currentState = EngineState.REPLAYING;
-                    callTransition();
+                    oneMoreTransition = true;
                 }
                 break;
 
@@ -214,27 +241,43 @@ public class SimulationEngine {
                 replay();
                 log.info("Replay done.");
                 currentState = EngineState.DIRTY_STORE;
-                callTransition();
+				oneMoreTransition = true;
                 break;
 
             case DIRTY_STORE:
                 log.info("Results written to file(s). Cleaning resources...");
                 clean();
                 currentState = EngineState.CONFIGURED;
-                callTransition();
+				oneMoreTransition = true;
                 break;
 
             default:
                 throw new IllegalSimulationStateException();
         }
+        } while (oneMoreTransition);
     }
 
     private void init() {
         long before = System.currentTimeMillis();
-        connection.add(dataset);
-        for (Update u : singleUpdates.values()) u.execute();
-        long after = System.currentTimeMillis();
+        IRI simResource = connection.getValueFactory().createIRI(baseURI + Configurator.SIMULATION_RESOURCE_TARGET);
 
+        // If there is a potentially modified configuration in the store, use it and not
+		// the one from the loaded dataset.
+		if (connection.hasStatement(null, null, null, false, simResource)) {
+			log.info("I do not use the configuration from the Trig files but the the configuration at {}" + Configurator.SIMULATION_RESOURCE_TARGET);
+            for (Statement stmt: dataset.getStatements(null, null, null, null))
+                if (!stmt.getContext().equals(simResource))
+                    connection.add(stmt);
+        }
+        else {
+            connection.add(dataset);
+        }
+
+		for (Entry<String, Update> u : singleUpdates.entrySet()) {
+            log.debug("Applying single update from {}", u.getKey());
+            u.getValue().execute();
+        }
+        long after = System.currentTimeMillis();
         long t = after - before;
         updateHistory.timeIncremented(t);
         interactionHistory.timeIncremented(t);
@@ -249,7 +292,9 @@ public class SimulationEngine {
         };
 
         timer = new Timer();
-        timer.scheduleAtFixedRate(task, 0, timeSlotDuration);
+        long tsDuration = getTimeslotDuration();
+        log.info("Wallclock timeslot duration: {}", tsDuration);
+        timer.scheduleAtFixedRate(task, 0, tsDuration);
     }
 
     private void update() {
@@ -261,7 +306,7 @@ public class SimulationEngine {
         updateHistory.timeIncremented(t);
         interactionHistory.timeIncremented(t);
 
-        if (t > timeSlotDuration) {
+        if (t > getTimeslotDuration()) { // TODO cache results
             log.warn("updates took more than timeslot duration ({} ms).", after - before); // TODO record as TSV instead
         }
     }
@@ -289,7 +334,10 @@ public class SimulationEngine {
                 dumpFormat = Rio.getParserFormatForFileName(dumpPattern).orElse(RDFFormat.TRIG);
             }
 
-            replayConnection.clear();
+            if (replayConnection == null)
+                replayConnection = connection.getRepository().getConnection();
+            else
+                replayConnection.clear();
 
             // replays updates and submits queries at each timestamp
             for (int iteration = 0; iteration < updateHistory.size(); iteration++) {
@@ -364,9 +412,25 @@ public class SimulationEngine {
     }
 
     private void clean() {
+        // TODO: save sim
         updateHistory.clear();
         interactionHistory.clear();
         replayConnection.clear();
+        timeSlotDuration = null;
     }
 
+    private long getTimeslotDuration() {
+		if (timeSlotDuration == null) {
+			IRI simIRI = connection.getValueFactory().createIRI(baseURI + Configurator.SIMULATION_RESOURCE_TARGET);
+			RepositoryResult<Statement> res =
+					connection.getStatements(simIRI, Vocabulary.WALLCLOCK_TIMESLOT_DURATION, null, simIRI);
+			if (!res.hasNext())
+				throw new RuntimeException("Timeslot duration not configured.");
+			Statement stmt = res.next();
+			if (res.hasNext())
+				log.warn("Multiple timeslot duration statements.");
+			timeSlotDuration = ((Literal) stmt.getObject()).longValue();
+		}
+		return timeSlotDuration;
+    }
 }

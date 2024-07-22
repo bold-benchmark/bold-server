@@ -25,26 +25,31 @@
     <h1>BOLD: A Benchmark for Linked Data and Hypermedia Agents</h1>
 
     <p>
-      Welcome to the BOLD (Buildings on Linked Data) simulation server.
+      Welcome to the BOLD (Buildings on Linked Data) server.
     </p>
 
     <h2>Where do I start?</h2>
 
     <p>
-        To start the simulation, PUT the following payload to <a href="sim">sim</a>:
+        To start the simulation, POST to <a href="sim">/sim</a>.
+        <button id="post" onClick="fetch('/sim', { method: 'POST'});">Do the POST</button>
     </p>
 
     <div>
-      <textarea id="start-payload" rows="12" cols="70">@prefix : &lt;http://ti.rw.fau.de/sim#&gt;  .
+    You can change the simulation configuration by PUTting to <a href="gsp/sim">gsp/sim</a>.
+    If corresponding data does not exist at gsp/sim in the data set, defaults apply, using which the following textarea has been initialised:
+      <textarea id="put-payload" rows="12" cols="70">@prefix : &lt;http://ti.rw.fau.de/sim#&gt;  .
 @prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
 @base &lt;http://127.0.1.1:8080/&gt; .
 
-&lt;sim&gt; :initialTime "2020-05-21T08:00:00Z"^^xsd:dateTime ;
+&lt;sim&gt; :initialTime "1970-01-01T00:00:00Z"^^xsd:dateTime ;
+      # in ms
+      :wallclockTimeslotDuration 1000 ;
       # in ms (corresponds to simulated time, not real execution time)
       :timeslotDuration 60000 ;
-      :iterations 1440 .</textarea>
+      :iterations 10 .</textarea>
         </br>
-        <button id="start-button" onclick="send('sim', 'start')">Send</button>
+        <button id="put-button" onclick="send('gsp/sim', 'put')">PUT to gsp/sim.</button>
     </div>
 
     <!-- TODO JSON-LD payload and drop-down list to choose format -->
@@ -52,7 +57,7 @@
     <h2>How do I know the simulation is running?</h2>
 
     <p>
-        The resource <a href="sim">sim</a> exposes the current time of the simulation.
+        The resource <a href="gsp/sim">sim</a> exposes the current time of the simulation.
     </p>
     <!--<p>
         Essentially, the state of <a href="sim">sim</a> is the result of the update done via

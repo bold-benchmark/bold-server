@@ -6,7 +6,7 @@ import org.eclipse.rdf4j.sail.SailConnectionListener;
 import java.util.ArrayList;
 import java.util.Stack;
 
-class UpdateHistory extends Stack<UpdateHistory.UpdateSequence> implements History, SailConnectionListener {
+public class UpdateHistory extends Stack<UpdateHistory.UpdateSequence> implements History, SailConnectionListener {
 
     enum UpdateOperation { INSERT, DELETE }
 

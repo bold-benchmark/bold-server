@@ -20,11 +20,20 @@ INSERT {
                  time:second ?second
             ]
         ] .
+        <sim> :timeslotDuration ?timeslotDuration .
+        <sim> :wallclockTimeslotDuration ?wallclockTimeslotDuration .
+        <sim> :iterations ?numberOfIterations .
     }
 } WHERE {
     OPTIONAL { <sim> :initialTime ?userTime . }
+    OPTIONAL { <sim> :timeslotDuration ?tsDuration . }
+    OPTIONAL { <sim> :wallclockTimeslotDuration ?wcTsDuration . }
+    OPTIONAL { <sim> :iterations ?iterations . }
     # default time: Jan 1st, 1970
     BIND (if(bound(?userTime), ?userTime, "1970-01-01T00:00:00Z"^^xsd:dateTime) AS ?time)
+    BIND (if(bound(?tsDuration), ?tsDuration, "60000"^^xsd:integer) AS ?timeslotDuration)
+    BIND (if(bound(?wcTsDuration), ?wcTsDuration, "1000"^^xsd:integer) AS ?wallclockTimeslotDuration)
+    BIND (if(bound(?iterations), ?iterations,   "10"^^xsd:integer) AS ?numberOfIterations)
     BIND (year(?time) AS ?year)
     BIND (month(?time) AS ?month)
     BIND (day(?time) AS ?day)

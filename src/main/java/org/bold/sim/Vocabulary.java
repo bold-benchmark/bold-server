@@ -16,7 +16,11 @@ public class Vocabulary {
 
     public static final IRI TIMESLOT_DURATION = VALUE_FACTORY.createIRI(NS, "timeslotDuration");
 
+    public static final IRI WALLCLOCK_TIMESLOT_DURATION = VALUE_FACTORY.createIRI(NS, "wallclockTimeslotDuration");
+
     public static final IRI ITERATIONS = VALUE_FACTORY.createIRI(NS, "iterations");
+
+    public static final IRI INITIAL_TIME = VALUE_FACTORY.createIRI(NS, "initialTime");
 
     public static final IRI CURRENT_TIME = VALUE_FACTORY.createIRI(NS, "currentTime");
 
