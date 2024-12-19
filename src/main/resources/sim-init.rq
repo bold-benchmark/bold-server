@@ -25,6 +25,7 @@ INSERT {
         <sim> :iterations ?numberOfIterations .
     }
 } WHERE {
+   GRAPH <sim> {
     OPTIONAL { <sim> :initialTime ?userTime . }
     OPTIONAL { <sim> :timeslotDuration ?tsDuration . }
     OPTIONAL { <sim> :wallclockTimeslotDuration ?wcTsDuration . }
@@ -40,4 +41,5 @@ INSERT {
     BIND (hours(?time) AS ?hour)
     BIND (minutes(?time) AS ?minute)
     BIND (seconds(?time) AS ?second)
+   }
 }
