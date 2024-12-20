@@ -54,7 +54,7 @@ While running, simulated time is added to `/gsp/sim` as follows:
 <sim> sim:currentTime "2020-05-21T09:12:00Z"^xsd:dateTime ;
       sim:currentIteration 72 .
 ```
-To initialise the simulation, it may be necessary to run a query once at the beginning. Such a query can get registered in the `.properties` file using (taken from [tc3.properties](https://github.com/bold-benchmark/bold-server/blob/jakarta-rest/tc3.properties))::
+To initialise the simulation, it may be necessary to run a query once at the beginning. Such a query can get registered in the `.properties` file using (taken from [tc3.properties](https://github.com/bold-benchmark/bold-server/blob/jakarta-rest/tc3.properties)):
 ```
 bold.init.update = query/tc3-init.rq
 ```
