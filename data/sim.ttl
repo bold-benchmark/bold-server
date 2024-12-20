@@ -3,6 +3,7 @@
 @base <http://127.0.1.1:8080/> .
 
 <sim> :initialTime "2020-05-21T08:00:00Z"^^xsd:dateTime ;
+      :wallclockTimeslotDuration 100 ; # in ms
       :timeslotDuration 60000 ; # in ms (corresponds to simulated time, not real execution time)
       :iterations 1440 .
       #:iterations 720 .
