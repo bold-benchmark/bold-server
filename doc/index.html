@@ -71,7 +71,7 @@
     </p>
 
     <p>
-        If you repeatedly GET the state of <a href="sim">sim</a>, you'll see that the simulation runs much faster.
+        If you repeatedly GET the state of <a href="gsp/sim">sim</a>, you'll see that the simulation runs much faster.
         Actual execution time depends on how the server is internally configured (100ms per iteration, by default).
     </p>
 
@@ -86,7 +86,7 @@
         Start with:
     </p>
     <ul>
-        <li><a href="Building_B3">Building_B3</a></li>
+        <li><a href="gsp/Building_B3">Building_B3</a></li>
     </ul>
 
     <p>
@@ -102,12 +102,12 @@
         identified by a URI. Navigate to the corresponding resource:
     </p>
     <ul>
-        <li><a href="City_Dublin">City_Dublin</a></li>
+        <li><a href="gsp/City_Dublin">City_Dublin</a></li>
     </ul>
 
     <p>
         Navigating in the environment by following links is the first thing agents should do.
-        <a href="Building_B3">Building_B3</a> includes many other links than just 'Building_B3 isPartOf City_Dublin'.
+        <a href="gsp/Building_B3">Building_B3</a> includes many other links than just 'Building_B3 isPartOf City_Dublin'.
     </p>
 
     <p>
@@ -118,16 +118,16 @@
         As an example, navigate successively to:
     </p>
     <ol>
-        <li><a href="Wing_SOR42">Wing_SOR42</a></li>
-        <li><a href="Floor_GroundFloor">Floor_GroundFloor</a></li>
-        <li><a href="Room_SOR42_G_15">Room_SOR42_G_15</a></li>
+        <li><a href="gsp/Wing_SOR42">Wing_SOR42</a></li>
+        <li><a href="gsp/Floor_GroundFloor">Floor_GroundFloor</a></li>
+        <li><a href="gsp/Room_SOR42_G_15">Room_SOR42_G_15</a></li>
     </ol>
     <p>
         Once in room G15, you'll find an occupancy sensor and an on/off switch:
     </p>
     <ul>
-        <li><a href="d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
-        <li><a href="B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
+        <li><a href="gsp/d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
+        <li><a href="gsp/B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
     </ul>
 
     <p>
@@ -136,7 +136,7 @@
         physical building.) The following system <em>feeds</em> (manages light in) room G15:
     </p>
     <ul>
-        <li><a href="Lighting_GF_M90">Lighting_GF_M90</a></li>
+        <li><a href="gsp/Lighting_GF_M90">Lighting_GF_M90</a></li>
     </ul>
 
     <p>
@@ -155,8 +155,8 @@
       As example consider the properties of room G15's equipment:
     </p>
     <ul>
-      <li><a href="property-d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER#it">the occupancy property</a> observed by <a href="d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
-      <li><a href="property-B3_42_GF_Z5_G7_LGHT_LOAD#it">the on/off property</a> acted on by <a href="B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
+      <li><a href="gsp/property-d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER#it">the occupancy property</a> observed by <a href="gsp/d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER">d01_Z5_G8_QUIET_ROOM_MM90_TRIGGER</a></li>
+      <li><a href="gsp/property-B3_42_GF_Z5_G7_LGHT_LOAD#it">the on/off property</a> acted on by <a href="gsp/B3_42_GF_Z5_G7_LGHT_LOAD">B3_42_GF_Z5_G7_LGHT_LOAD</a></li>
     </ul>
 
     <p>
@@ -178,11 +178,11 @@
 
     <div>
       <textarea id="turnoff-payload" rows="6" cols="70">@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
-@base &lt;http://127.0.1.1:8080/property-B3_42_GF_Z5_G7_LGHT_LOAD&gt; .
+@base &lt;http://127.0.1.1:8080/gsp/property-B3_42_GF_Z5_G7_LGHT_LOAD&gt; .
 
 &lt;#it&gt; rdf:value "off" .</textarea>
         </br>
-        <button id="turnoff-button" onclick="send('property-B3_42_GF_Z5_G7_LGHT_LOAD', 'turnoff')">Send</button>
+        <button id="turnoff-button" onclick="send('gsp/property-B3_42_GF_Z5_G7_LGHT_LOAD', 'turnoff')">Send</button>
     </div>
 
     <h2>What goal do my agents have?</h2>
