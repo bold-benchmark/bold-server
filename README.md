@@ -15,7 +15,7 @@ docker build . -t bold-server
 docker run -p 8080:8080 -it bold-server
 ```
 
-Then, go to http://localhost:8080 for a tutorial.
+Then, go to http://127.0.1.1:8080 for a tutorial.
 
 ## Benchmark Run
 
@@ -29,7 +29,7 @@ Alternatively, with Docker:
 docker run -p 8080:8080 -e TASKNAME=<taskname> -it bold-server
 ```
 
-The first argument of the server command is a task name, e.g. `bin/bold-benchmark ts1` will load `ts1.properties`.
+The first argument of the server command is a task name, e.g. `ts1` will load `ts1.properties`.
 Default server configuration (when no argument is given) is stored in `sim.properties`.
 
 To start/stop a simulation run, send the following HTTP requests to the server:
