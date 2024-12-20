@@ -34,12 +34,11 @@ Default server configuration (when no argument is given) is stored in `sim.prope
 
 To start/stop a simulation run, send the following HTTP requests to the server:
 
- - `PUT /sim` with payload `data/sim.ttl` (or any RDF graph giving a number of iterations to run, with predicate `sim:iterations`)
- - `DELETE /sim` (or any request that deletes that number of iterations)
+ - `POST /sim` -- this assumes that there is a simulation configuration deployed, see [sim.ttl](https://github.com/bold-benchmark/bold-server/blob/master/data/sim.ttl) for an example. If this is not deployed, defaults are used, or can PUT `sim.ttl` to `/gsp/sim`.
 
 See also `run.sh` (to execute after the server has started on port 8080).
 
-While running, simulated time is available under `/sim` as follows:
+While running, simulated time is added to `/gsp/sim` as follows:
 ```
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sim: <http://ti.rw.fau.de/sim#> .
