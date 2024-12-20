@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.model.impl.IntegerLiteral;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -76,7 +77,14 @@ public class SimulationEngine {
 
     private final InteractionHistory interactionHistory;
 
+    private final List<Statement> simSav = new LinkedList<Statement>();
+    Set<IRI> predicatesInterestingForSaving = new HashSet<IRI>(
+			Arrays.asList(Vocabulary.TIMESLOT_DURATION, Vocabulary.WALLCLOCK_TIMESLOT_DURATION,
+					Vocabulary.INITIAL_TIME, Vocabulary.RANDOM_SEED, Vocabulary.ITERATIONS));
+
     private final String baseURI;
+
+    private final IRI simResource;
 
     private Timer timer;
 
@@ -88,6 +96,8 @@ public class SimulationEngine {
         // RDF store initialization
         Vocabulary.registerFunctions();
         connection = con;
+
+        simResource = connection.getValueFactory().createIRI(baseURI + Configurator.SIMULATION_RESOURCE_TARGET);
 
         updateHistory = updates;
         interactionHistory = interactions;
@@ -201,6 +211,7 @@ public class SimulationEngine {
                 // TODO use a Configuration object
                 log.info("Simulation engine configured. Current configuration: (single updates) {}; (continuous updates) {}; (queries) {}; (dump pattern) {}.", singleUpdates.keySet(), continuousUpdates.keySet(), queries.keySet(), dumpPattern);
                 log.info("Waiting for agent's start command...");
+                loadSimAndDataset();
                 currentState = EngineState.EMPTY_STORE;
                 break;
 
@@ -238,6 +249,7 @@ public class SimulationEngine {
 
             case REPLAYING:
                 log.info("Simulation run done. Replaying simulation...");
+                saveSim();
                 replay();
                 log.info("Replay done.");
                 currentState = EngineState.DIRTY_STORE;
@@ -257,21 +269,35 @@ public class SimulationEngine {
         } while (oneMoreTransition);
     }
 
-    private void init() {
-        long before = System.currentTimeMillis();
-        IRI simResource = connection.getValueFactory().createIRI(baseURI + Configurator.SIMULATION_RESOURCE_TARGET);
 
-        // If there is a potentially modified configuration in the store, use it and not
+	private void loadSimAndDataset() {
+		// If there is a potentially modified configuration in the store, use it and not
 		// the one from the loaded dataset.
 		if (connection.hasStatement(null, null, null, false, simResource)) {
-			log.info("I do not use the configuration from the Trig files but the the configuration at {}" + Configurator.SIMULATION_RESOURCE_TARGET);
-            for (Statement stmt: dataset.getStatements(null, null, null, null))
-                if (!stmt.getContext().equals(simResource))
-                    connection.add(stmt);
-        }
-        else {
-            connection.add(dataset);
-        }
+			log.info("I do not use the configuration from the Trig files but the the configuration at {}",
+					Configurator.SIMULATION_RESOURCE_TARGET);
+			// saving the important content of sim
+			simSav.clear();
+			for (Statement stmt : connection.getStatements(null, null, null, simResource)) {
+				if (predicatesInterestingForSaving.contains(stmt.getPredicate())) {
+					log.info("Saving configuration statement {}", stmt);
+					simSav.add(stmt);
+				}
+			}
+		}
+
+		connection.add(dataset);
+
+		// overwriting with the saved configuration
+		if (!simSav.isEmpty()) {
+			log.info("loading simulation configuration saved before the cleanup");
+			connection.clear(simResource);
+			connection.add(simSav, simResource);
+		}
+	}
+
+    private void init() {
+        long before = System.currentTimeMillis();
 
 		for (Entry<String, Update> u : singleUpdates.entrySet()) {
             log.debug("Applying single update from {}", u.getKey());
@@ -310,6 +336,17 @@ public class SimulationEngine {
             log.warn("updates took more than timeslot duration ({} ms).", after - before); // TODO record as TSV instead
         }
     }
+
+	private void saveSim() {
+		log.info("Saving the contents of {}", simResource);
+		simSav.clear();
+		for (Statement stmt : connection.getStatements(null, null, null, simResource)) {
+			if (predicatesInterestingForSaving.contains(stmt.getPredicate())) {
+				log.debug("Saving configuration statement {}", stmt);
+				simSav.add(stmt);
+			}
+		}
+	}
 
     private void replay() {
         timer.cancel();
@@ -412,7 +449,6 @@ public class SimulationEngine {
     }
 
     private void clean() {
-        // TODO: save sim
         updateHistory.clear();
         interactionHistory.clear();
         replayConnection.clear();
