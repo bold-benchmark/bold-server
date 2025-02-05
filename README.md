@@ -15,7 +15,7 @@ Alternatively, with Docker:
 docker build . -t bold-server
 docker run -p 8080:8080 -it bold-server
 ```
-Then, go to http://127.0.1.1:8080 for a tutorial.
+Then, go to http://127.0.1.1:8080 for a tutorial. You can also [preview the tutorial](https://html-preview.github.io/?url=https://github.com/bold-benchmark/bold-server/blob/jakarta-rest/doc/index.html) without starting the BOLD server.
 
 ## Loading a Configuration
 
