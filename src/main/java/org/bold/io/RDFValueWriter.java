@@ -93,6 +93,7 @@ public class RDFValueWriter implements RDFWriter {
                 try {
                     // TODO if several representations are available, choose one?
                     handleValue((Literal) o);
+                    baseWriter.write("\n");
                 } catch (IOException e) {
                     log.error("Couldn't write literal representation to stream", e);
                 }
