@@ -80,4 +80,4 @@ bold.welcome.directory.filepath = doc/
 ```
 ## Acknowledgments
 
-This work was partially funded by the German Federal Ministry of Education and Research through the MOSAIK project (grant no. 01IS18070A).
+This work was partially funded by the German Federal Ministry of Research, Technology, and Space (BMFTR) through the MOSAIK project (FKZ 01IS18070A) and the NeSyPlan project (FKZ 16IS23052B), next to the French-German University (DFH-UFA) in the SeReCo project (CDFA-02-22).
